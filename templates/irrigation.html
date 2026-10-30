@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Irrigation System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f7f0;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000015;
+        }
+
+        h1 {
+            color: #246b37;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 20px 0 8px;
+        }
+
+        input,
+        button {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 15px;
+            background: #246b37;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 22px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        a {
+            color: #246b37;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Smart Irrigation System</h1>
+        <p>Enter the soil moisture percentage to view an irrigation recommendation.</p>
+
+        <form method="POST">
+            <label for="moisture">Soil Moisture (0–100%)</label>
+
+            <input type="number" id="moisture" name="moisture" min="0" max="100" step="any" required
+                value="{{ moisture if moisture is not none else '' }}" placeholder="Example: 25">
+
+            <button type="submit">Check Irrigation</button>
+        </form>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if recommendation %}
+        <div class="result">
+            <h3>System Result</h3>
+            <p><strong>Soil Moisture:</strong> {{ moisture }}%</p>
+            <p><strong>Recommendation:</strong> {{ recommendation }}</p>
+            <p><strong>Pump Status:</strong> {{ pump_status }}</p>
+        </div>
+        {% endif %}
+
+        <p><a href="/">Go to Disease Detection</a></p>
+
+        <p><small>Demo only: moisture is entered manually and pump status is simulated.</small></p>
+    </div>
+</body>
+
+</html>

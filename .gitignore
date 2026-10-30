@@ -1,0 +1,29 @@
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Dataset - keep locally
+dataset/
+train/
+val/
+test/
+
+# Uploaded user images
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Environment and temporary files
+.env
+*.log
+.DS_Store
+
+# Backup file
+app_backup.py
+
+# Backup model
+models/*backup*.keras

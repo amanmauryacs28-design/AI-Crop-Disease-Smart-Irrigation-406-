@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agriculture System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f7f0;
+            color: #243b2a;
+        }
+
+        header {
+            background: #176b3a;
+            color: white;
+            text-align: center;
+            padding: 28px 15px;
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px #00000012;
+        }
+
+        h2 {
+            color: #176b3a;
+        }
+
+        input,
+        button {
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 7px;
+        }
+
+        input {
+            max-width: 100%;
+            border: 1px solid #aaa;
+        }
+
+        button {
+            border: none;
+            background: #218447;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #145d30;
+        }
+
+        .result {
+            background: #edf8ee;
+            padding: 15px;
+            margin-top: 18px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .moisture-track {
+            width: 100%;
+            height: 18px;
+            background: #e1e7e1;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .moisture-fill {
+            width: 0%;
+            height: 100%;
+            background: #218447;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .leaf-image {
+            max-width: 100%;
+            width: 300px;
+            display: block;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+
+        .error {
+            color: #b42318;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #526653;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🌱 Smart Agriculture System</h1>
+        <p>AI Based Crop Disease Detection and Smart Irrigation</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>🌿 Crop Disease Detection</h2>
+            <p>Upload a tomato leaf image to check its predicted health category.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="leaf_image" accept="image/png,image/jpeg,image/jpg,image/webp" required>
+                <br>
+                <button type="submit">Check Crop Disease</button>
+            </form>
+
+            {% if error %}
+            <div class="result error">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            {% if result %}
+            <div class="result">
+                <h3>Prediction Result</h3>
+                <p><strong>Predicted category:</strong> {{ result.replace('___', ' - ').replace('_', ' ') }}</p>
+                <p><strong>Model confidence:</strong> {{ "%.2f"|format(confidence) }}%</p>
+                <p>This is an AI prediction, not a confirmed agricultural diagnosis.</p>
+
+                {% if image_url %}
+                <img class="leaf-image" src="{{ image_url }}" alt="Uploaded leaf image">
+                {% endif %}
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>💧 Smart Irrigation</h2>
+            <p>Enter soil moisture to get a demo watering recommendation.</p>
+
+            <label for="moisture">Soil Moisture (%):</label>
+            <br>
+            <input type="number" id="moisture" min="0" max="100" step="any" placeholder="e.g. 25">
+
+            <button type="button" onclick="checkWater()">
+                Check Watering Needs
+            </button>
+
+
+            <div class="result">
+                <h3>Soil Moisture Status</h3>
+
+                <p>
+                    Moisture Level:
+                    <strong id="moisture-value">--%</strong>
+                </p>
+
+                <div class="moisture-track">
+                    <div id="moisture-bar" class="moisture-fill"></div>
+                </div>
+
+                <p>
+                    Soil Condition:
+                    <strong id="soil-status">Not checked</strong>
+                </p>
+
+                <p>
+                    Pump Status:
+                    <strong id="pump-status">Not checked</strong>
+                </p>
+
+                <p id="water-result" aria-live="polite">
+                    Enter a moisture value to see the recommendation.
+                </p>
+            </div>
+
+            <small>
+                Demo only: moisture is entered manually. Pump status is simulated;
+                no physical pump is connected.
+            </small>
+
+        </section>
+    </main>
+
+    <footer>
+        AI Based Crop Disease Detection and Smart Irrigation System
+    </footer>
+
+
+
+    <script>
+
+        function checkWater() {
+            const input = document.getElementById("moisture");
+            const result = document.getElementById("water-result");
+            const value = document.getElementById("moisture-value");
+            const bar = document.getElementById("moisture-bar");
+            const soil = document.getElementById("soil-status");
+            const pump = document.getElementById("pump-status");
+
+            if (input.value.trim() === "") {
+                result.textContent = "Please enter soil moisture between 0 and 100.";
+                return;
+            }
+
+            const moisture = Number(input.value);
+
+            if (!Number.isFinite(moisture) || moisture < 0 || moisture > 100) {
+                result.textContent = "Please enter a value between 0 and 100.";
+                return;
+            }
+
+            value.textContent = moisture + "%";
+            bar.style.width = moisture + "%";
+
+            if (moisture < 30) {
+                soil.textContent = "Dry";
+                pump.textContent = "ON (simulated)";
+                result.textContent =
+                    "Soil may be dry. Check crop requirements before watering.";
+            } else if (moisture < 60) {
+                soil.textContent = "Moderate";
+                pump.textContent = "OFF (simulated)";
+                result.textContent =
+                    "Monitor soil moisture and crop watering requirements.";
+            } else {
+                soil.textContent = "Moist";
+                pump.textContent = "OFF (simulated)";
+                result.textContent =
+                    "Watering may not be needed right now. Check actual soil conditions.";
+            }
+        }
+
+    </script>
+</body>
+
+</html>
